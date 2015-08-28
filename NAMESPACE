@@ -1,0 +1,11 @@
+# exportPattern("^[[:alpha:]]+")
+
+import(truncnorm,Rsolnp)
+importFrom("graphics","lines","par","plot")
+importFrom("stats","na.omit","pnorm","qnorm","rchisq","rnorm", "rt", "sd", "shapiro.test", "uniroot", "var")
+
+export(gsym.point, print.gsym.point, summary.gsym.point, control.gsym.point, plot.gsym.point)
+S3method(print, gsym.point)
+S3method(print, summary.gsym.point)
+S3method(summary, gsym.point)
+S3method(plot, gsym.point)
