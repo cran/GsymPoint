@@ -1,5 +1,6 @@
 \name{print.gsym.point}
 \alias{print.gsym.point}
+
 \title{
 Print method for gsym.point objects
 }
@@ -9,9 +10,7 @@ Default print method for objects fitted with \code{gsym.point()} function. A sho
 (if the \code{categorical.cov} argument of the \code{gsym.point()} function is not NULL).
 }
 \usage{
-%print.gsym.point(x, digits = max(3L, getOption("digits") - 3L), ...)
 \method{print}{gsym.point}(x, digits = max(3L, getOption("digits") - 3L), ...)
-
 }
 
 \arguments{
@@ -45,9 +44,10 @@ data(elastase)
 gsym.point.GPQ.elastase<-gsym.point(methods = "GPQ", data = elastase, marker = "elas", 
 status = "status", tag.healthy = 0, categorical.cov = NULL, CFN = 1, CFP = 1, 
 control = control.gsym.point(), confidence.level = 0.95, trace = FALSE, 
-seed = FALSE, value.seed = 3) 
+seed = FALSE, value.seed = 3, verbose = FALSE) 
 
 gsym.point.GPQ.elastase
 
 print(gsym.point.GPQ.elastase)
+
 }

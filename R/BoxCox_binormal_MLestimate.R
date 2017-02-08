@@ -8,7 +8,6 @@ function (X0,X1,n0,n1)
   # n0: sample size of the healthy population
   # n1: sample size of the diseased population
 
-
   # Initial estimation for lambda:
   parameters0 = c(n0,X0)
   parameters1 = c(n1,X1)

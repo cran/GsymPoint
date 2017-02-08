@@ -1,0 +1,45 @@
+	CHANGES in `GsymPoint' VERSION 1.1
+		
+	o	A new option "auto" was included in the main function to automatically select the most appropriate method 
+		of the two available "GPQ" and "EL" methods
+
+	o	Shapiro-Wilk's test p-values were fixed as NULL when the sample size falls outside of the interval [3,5000]
+
+	o	The AUC result for the GPQ method is now given directly, not in a nested list
+
+	o	The AUC result for the EL method is now given directly, not in a nested list
+
+	o	The same column names ("Value", "ll" and "ul") as in the GPQ method were also included now in the EL method 
+
+	o	The results of both methods EL and GPQ are now given under the named list "Global"
+	
+	o	The possibility of using a group variable with categories different from 0 and 1 was included
+
+	o	The type of the status variable to be used within gsym.point function was changed in the way that 
+		the end-user is not forced to use now 0 or 1 code for the status variable
+
+	o	Some options of the plot function were changed in the way that the end-user can change the title and the labels 
+		of the axes given by default
+
+	o	Output of the plot function was changed: 
+
+			The graphical display of the results includes the ROC-coordinates of the point estimates obtained
+			The accurate ROC curve for datasets with ties is shown now
+			The call to readline (`press return for next page') was now avoided because is problematic for non-interactive usage
+
+		%%% IGUAL EL SIGUIENTE CAMBIO NO ES NECESARIO INDICARLO
+
+	o	The unnecessary code in the calc.empirical.AUC function was deleted (the confidence level argument and the 
+		count.zeros and count.neg functions defined inside of such function)
+
+	o	Some unit tests were included using the testthat library in order to check that our functions
+		compute the correct ROC curves and AUC values
+
+	o	A new parameter "verbose" was included in the main function to turn on/o the option of printing information 
+		on the screen while the code is running
+		
+	o	The Pharmaceutical Statistics reference was updated	
+    	
+	o	Inclusion of the R Journal reference
+	
+	

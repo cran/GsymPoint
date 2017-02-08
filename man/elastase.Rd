@@ -16,6 +16,7 @@ The \code{elastase} dataset was obtained from a study carried out in the Cardiol
     \item{\code{gender}}{patient's gender. Factor with \code{Male} and \code{Female} levels}
   }
 }
+
 \source{
 Amaro, A., Gude, F., \enc{González}{Gonzalez}-Juanatey, R., Iglesias, C., \enc{Fernández}{Fernandez}-\enc{Vázquez}{Vazquez}, F., \enc{García}{Garcia}-\enc{Acuña}{Acuna}, J. and Gil, M. (1995). Plasma leukocyte elastase concentration in angiographically diagnosed coronary artery disease. \emph{European Heart Journal} \bold{16}, 615--622.
 }
@@ -27,3 +28,10 @@ data(elastase)
 summary(elastase)
 }
 \keyword{datasets}
+
+
+
+
+
+
+

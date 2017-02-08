@@ -1,6 +1,5 @@
 function.GPQ <-
-function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym.point(), confidence.level)
-
+function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym.point(), confidence.level, seed, value.seed)
 {
   # Marker in the healthy population:
   X0 <- data[data[,status] == tag.healthy, marker]
@@ -9,7 +8,6 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
 
   n0 <- length(X0)
   n1 <- length(X1)
-
 
   model ="norm"
 
@@ -20,24 +18,38 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
   #           due to the violation of the assumed criterium that
   #           larger values of the biomarker are associated with the disease
 
-  # normality.transformed = "yes" normal assumption for Box-Cox transformed data 
+  # normality.transformed = "yes" normal assumption for Box-Cox transformed data
 
-  pvalue0 <- shapiro.test(X0)$p.value  # p-value for normality assumption healthy data
-  pvalue1 <- shapiro.test(X1)$p.value  # p-value for normality assumption diseased data     
+  if (n0>=3 & n0<=5000)
+  {
+  	pvalue0 <- shapiro.test(X0)$p.value   # p-value for normality assumption healthy data
+  }
+  else
+  {
+	pvalue0 <- NULL
+  }
+
+  if (n1>=3 & n1<=5000)
+  {
+  	pvalue1 <- shapiro.test(X1)$p.value   # p-value for normality assumption diseased data
+  }
+  else
+  {
+	pvalue1 <- NULL
+  }
 
   # If original data are not normally distributed:
-  if((pvalue0 < 0.05) | (pvalue1 < 0.05))
+
+  if (is.null(pvalue0) | is.null(pvalue1))
   {
-
 	lambda_sol = BoxCox_binormal_MLestimate(X0,X1,n0,n1)
-
-        if (abs(lambda_sol) < 10^(-15))
+	if (abs(lambda_sol) < 10^(-15))
   	{
-      		X0 = log(X0)
-      		X1 = log(X1)
-       	}
+		X0 = log(X0)
+      	X1 = log(X1)
+      }
 
-  	else
+  	else		
   	{
       		X0 =((X0^(lambda_sol))-1)/lambda_sol
       		X1 =((X1^(lambda_sol))-1)/lambda_sol
@@ -57,33 +69,91 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
 
    }
 
-   # Original data are normally distributed:
-   else
+   if (!is.null(pvalue0) & !is.null(pvalue1))
    {
-  	flag = 0	    
-   }
+	if(pvalue0 < 0.05 | pvalue1 < 0.05)
+  	{
+		lambda_sol = BoxCox_binormal_MLestimate(X0,X1,n0,n1)
 
+        	if (abs(lambda_sol) < 10^(-15))
+  		{
+      			X0 = log(X0)
+      			X1 = log(X1)
+       		}
+
+  		else
+  		{
+      			X0 =((X0^(lambda_sol))-1)/lambda_sol
+      			X1 =((X1^(lambda_sol))-1)/lambda_sol
+  		}
+
+  		if (mean(X0) > mean(X1))
+  		{
+    			flag = -1
+    			X0 = -X0
+    			X1 = -X1
+  		}
+
+  		else
+  		{
+    			flag = 1
+  		}
+
+   	}
+
+   # Original data are normally distributed:
+   	else {
+  		flag = 0	    
+   	}
+
+  }
 
    X0 = sort(X0)
    X1 = sort(X1)
 
    # If original data are not normally distributed:
-   pvalue0.transformed <- shapiro.test(X0)$p.value
-   pvalue1.transformed <- shapiro.test(X1)$p.value
 
-   if(flag != 0)
-   { 
-	if((pvalue0.transformed>=0.05) & (pvalue1.transformed>=0.05))
+   if(flag != 0)  
+   {
+   	if (n0>=3 & n0<=5000)
+   	{
+  		pvalue0.transformed <- shapiro.test(X0)$p.value		
+   	}
+
+	else
   	{
-        	normality.transformed = "yes"
+		pvalue0.transformed <- NULL		
   	}
-  	
-	else 
-	{
-		normality.transformed = "no"
-        }
-   }
 
+	if (n1>=3 & n1<=5000)
+   	{
+  		pvalue1.transformed <- shapiro.test(X1)$p.value
+   	}
+ 
+	else
+  	{
+		pvalue1.transformed <- NULL		
+  	}
+
+   
+   	if (is.null(pvalue0.transformed) | is.null(pvalue1.transformed))
+  	{
+		normality.transformed = "no"
+      	}
+
+	if (!is.null(pvalue0.transformed) & !is.null(pvalue1.transformed))
+   	{
+		if(pvalue0.transformed>=0.05 & pvalue1.transformed>=0.05)
+  		{
+        		normality.transformed = "yes"
+  		}
+  	
+		else 
+		{
+			normality.transformed = "no"
+        	}
+   	}
+   }
 
    m0 = mean(X0)
    m1 = mean(X1)
@@ -100,17 +170,15 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
 
   if (rho == 1)   # the symmetry point
   {
-
   	# Exact solution:
   	that <- 1-pnorm(a/(1+b))  
   	chat = (s1*m0+s0*m1)/(s0+s1)
-
   }
 
   else
   {
 	that <- uniroot(f = cOpt_gsym, interval =  c(0,min(c(1/rho,1))), tol = 1e-12, parameters = parameters, model = model)$root
-        chat = qnorm(1-that, m0, s0)
+      chat = qnorm(1-that, m0, s0)
   }
 
   spehat = 1-that
@@ -121,6 +189,12 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
   spe <- numeric(length = control$I)
   sen <- numeric(length = control$I)
 
+  # If you we want to fix the seed for generating the trials:
+  if(seed == TRUE) 
+  {
+    set.seed (value.seed)
+  }
+  
   for (k in 1:control$I)
   {
     t0 = rt(1, df = n0-1)
@@ -226,7 +300,7 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
    Se[,-1] <- CIgp_sen
 
    optimal.result <- list(cutoff = optimal.cutoff, Specificity = Sp, Sensitivity = Se)
-   AUC <- calculate.empirical.AUC(data, marker, status, tag.healthy, confidence.level)
+   AUC <- calculate.empirical.AUC(data, marker, status, tag.healthy)
 
    # If original data are normally distributed:
    if (flag == 0)
@@ -240,5 +314,4 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
    	res <- list (optimal.result = optimal.result, AUC = AUC, rho = rho, lambda = lambda_sol, normality.transformed = normality.transformed, pvalue.healthy = pvalue0, pvalue.diseased = pvalue1, pvalue.healthy.transformed = pvalue0.transformed, pvalue.diseased.transformed = pvalue1.transformed)
    }
    return(res)
-
 }

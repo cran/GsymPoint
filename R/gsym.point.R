@@ -1,16 +1,20 @@
 gsym.point <-
-function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN = 1, CFP = 1, control = control.gsym.point(), confidence.level = 0.95, trace = FALSE, seed = FALSE, value.seed = 3)
+function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN = 1, CFP = 1, control = control.gsym.point(), confidence.level = 0.95, trace = FALSE, seed = FALSE, value.seed = 3, verbose = FALSE)
 {
-
   # Possible errors:
   if(missing(methods) || is.null(methods))
   {
       stop("'methods' argument required.", call.=FALSE)
   }
 
-  if(any(!(methods %in% c("GPQ","EL"))))
+  if(any(!(methods %in% c("GPQ","EL","auto"))))
   {
       stop ("You have entered an invalid method.", call. = FALSE)
+  }
+
+  if ((length(methods)== 3) | (length(methods)== 2 & "auto" %in% methods))
+  {
+  	stop ("You have entered an invalid option. The only possible options are 'GPQ', 'EL','auto', or both methods 'GPQ' and 'EL'", call. = FALSE)
   }
 
   if (missing(data)|| is.null(data))
@@ -78,6 +82,11 @@ function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN
       stop("'seed' must be a logical-type argument.", call. = FALSE)   
   }
 
+  if (is.logical(verbose) == FALSE)
+  {
+      stop("'verbose' must be a logical-type argument.", call. = FALSE)   
+  }
+
   if (length(value.seed) != 1)
   {
       stop("'value.seed' must be a single number.", call. = FALSE)
@@ -94,77 +103,77 @@ function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN
   res <- vector("list", length(methods))
   names(res) <- methods
 
-  if(!is.null(categorical.cov)) {
-    	if(!is.factor(data[, categorical.cov])) data[, categorical.cov] <- factor(data[, categorical.cov])
-        	data[, categorical.cov] <- droplevels(data[, categorical.cov])
-        	levels.cat <- levels(data[, categorical.cov])
-        	for (i in 1: length(methods)) {
-            	res[[i]] <- vector("list", length(levels.cat))
+  if(!is.null(categorical.cov)) 
+  {
+  	if(!is.factor(data[, categorical.cov])) data[, categorical.cov] <- factor(data[, categorical.cov])
+        data[, categorical.cov] <- droplevels(data[, categorical.cov])
+        levels.cat <- levels(data[, categorical.cov])
+        for (i in 1: length(methods)) 
+	{
+        	res[[i]] <- vector("list", length(levels.cat))
             	names(res[[i]]) <- levels.cat
         }
   }
 
-  else {
-    		levels.cat = 1
-    		res[[1]] <- vector("list", 1)
-    		names(res[[1]]) <- "Global"
- }
+  else 
+  {
+  	levels.cat = 1
+    	for (i in 1: length(methods)) 
+	{
+        	res[[i]] <- vector("list", 1)
+        	names(res[[i]]) <- "Global"
+	}
+  }
 
   # Calculate the needed parameters:
   n0 <- length(data[data[,status] == tag.healthy, marker])
   n1 <- length(data[data[,status] != tag.healthy, marker])
 
-  # If you we want to fix the seed for generating the trials:
-  if(seed == TRUE) 
-  {
-	set.seed (value.seed)
-  }
-
   # Each method is called up:
- 	for (i in 1: length(methods))
+  for (i in 1: length(methods))
   {
       	for(j in 1:length(levels.cat))
         {
-        		if(trace)
-            		{
-        			cat("*************************************************\n")
-        			text <- paste("Method: ", methods[i], sep = "")
+        	if(trace)
+            	{
+        		cat("*************************************************\n")
+        		text <- paste("Method: ", methods[i], sep = "")
 
-        			if(length(levels.cat) > 1) {
-        		 		 text <- paste(text, ". Level: ", levels.cat[j], sep = "")
-        			}
-
-        			cat(text)
-        			cat("\nAnalysing ...")
-        			cat("\n*************************************************\n")
+        		if(length(levels.cat) > 1) {
+        			text <- paste(text, ". Level: ", levels.cat[j], sep = "")
         		}
 
-         	  data.m <- if(length(levels.cat) != 1) data[data[,categorical.cov] == levels.cat[j], ] else data           	
-                  rho = CFP/CFN
-        	  res[[i]][[j]] <- eval(parse(text = paste("function.", methods[i], sep = "")))(data = data.m, marker = marker, status = status, tag.healthy = tag.healthy, CFN = CFN, CFP = CFP, control = control, confidence.level = confidence.level)
+        		cat(text)
+        		cat("\nAnalysing ...")
+        		cat("\n*************************************************\n")
+        	}
+
+         	data.m <- if(length(levels.cat) != 1) data[data[,categorical.cov] == levels.cat[j], ] else data           	
+                rho = CFP/CFN
+        	res[[i]][[j]] <- eval(parse(text = paste("function.", methods[i], sep = "")))(data = data.m, marker = marker, status = status, tag.healthy = tag.healthy, CFN = CFN, CFP = CFP, control = control, confidence.level = confidence.level, seed = seed, value.seed = value.seed)
 	          	  
         }
    }
 
   res$methods <-  methods
 
-  if(length(methods) > 1)  # Both methods are considered
+  if(verbose)
   {
-	if (is.null(categorical.cov))
-        {
-		if (methods[1] == "GPQ")
-		{
-                	if(!"normality.transformed" %in% names(res$GPQ$Global))
+	if(length(methods) > 1)      
+	{
+		if (is.null(categorical.cov))   
+      		{
+	           	if(!"normality.transformed" %in% names(res$GPQ$Global))
   			{
 				cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
 				cat(paste("considered normally distributed in both groups.\n"))
 				cat(paste("Therefore, although the results of both methods will be shown,\n"))
 				cat(paste("the GPQ method would be more suitable for this dataset.\n"))
 				
-			      cat("\n")
+			      	cat("\n")
 
 				cat("Shapiro-Wilk test p-values\n")
-                        cat("\n")
+                        	cat("\n")
 
 				print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
 
@@ -181,8 +190,7 @@ function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN
 					cat(paste("indicates that the transformed marker can be considered \n"))
 					cat(paste("normally distributed in both groups.\n"))
 					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the GPQ method would be more suitable for this dataset.\n"))
-						
+					cat(paste("the GPQ method would be more suitable for this dataset.\n"))						
 
 					cat("\n")
 
@@ -194,18 +202,28 @@ function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN
 					print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4), round(res$GPQ$Global$pvalue.healthy.transformed,4), round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
 				}
 				
-				else if (res$GPQ$Global$normality.transformed == "no")
+				else if (res$GPQ$Global$normality.transformed == "no")   
 				{
-					cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
-					cat(paste("can not be considered normally distributed in both groups.\n"))
-					cat(paste("After transforming the marker using the Box-Cox transformation\n"))
-					cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
-					cat(paste("transformed marker can not be considered normally distributed \n"))
-					cat(paste("in both groups.\n"))
-					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
-					cat(paste("You must use the EL method instead.\n"))
-				
+					if (is.null(res$GPQ$Global$pvalue.healthy) | is.null(res$GPQ$Global$pvalue.diseased))					
+					{
+						cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+						cat(paste("Therefore, although the results of both methods will be shown,\n"))
+						cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
+						cat(paste("You must use the EL method instead.\n"))	
+					}
+
+					else
+					{
+						cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+						cat(paste("can not be considered normally distributed in both groups.\n")) 
+						cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+						cat(paste("estimate, the Shapiro-Wilk normality test indicates that the \n"))
+						cat(paste("transformed marker can not be considered normally distributed \n"))
+						cat(paste("in both groups.\n")) 
+						cat(paste("Therefore, although the results of both methods will be shown,\n"))
+						cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
+						cat(paste("You must use the EL method instead.\n"))
+					}				
 					cat("\n")
 
 					cat(paste("Box-Cox lambda estimate =", round(res$GPQ$Global$lambda,4),"\n"))
@@ -213,316 +231,509 @@ function(methods, data, marker, status, tag.healthy, categorical.cov = NULL, CFN
 
 					cat("Shapiro-Wilk test p-values\n")
 
-					print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4), round(res$GPQ$Global$pvalue.healthy.transformed,4), round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2,dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
-				}
+					if (!is.null(res$GPQ$Global$pvalue.healthy) & !is.null(res$GPQ$Global$pvalue.diseased))					
+					{
+						print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4), round(res$GPQ$Global$pvalue.healthy.transformed,4), round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					}
 
-			}
-		}	
-        
-		if (methods[1] == "EL")
-		{
-                	if(!"normality.transformed" %in% names(res$EL$Global))
-  			{
-				cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
-				cat(paste("considered normally distributed in both groups.\n"))
-				cat(paste("Therefore, although the results of both methods will be shown,\n"))
-				cat(paste("the GPQ method would be more suitable for this dataset.\n"))
+					if (is.null(res$GPQ$Global$pvalue.healthy) & !is.null(res$GPQ$Global$pvalue.diseased))
+					{
+						print(matrix(c("NULL", round(res$GPQ$Global$pvalue.diseased,4), "NULL", round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					}
 
-			      cat("\n")
+					if (!is.null(res$GPQ$Global$pvalue.healthy) & is.null(res$GPQ$Global$pvalue.diseased))
+					{								
+						print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4),"NULL", round(res$GPQ$Global$pvalue.healthy.transformed,4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					}
 
-				cat("Shapiro-Wilk test p-values\n")
-                        cat("\n")
-
-				print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
-			}
-
-			else
-			{ 
-				if (res$EL$Global$normality.transformed == "yes") 
-				{
-					cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
-					cat(paste("be considered normally distributed in both groups.\n"))
-					cat(paste("However, after transforming the marker using the Box-Cox \n"))
-					cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
-					cat(paste("indicates that the transformed marker can be considered \n"))
-					cat(paste("normally distributed in both groups.\n"))
-					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the GPQ method would be more suitable for this dataset.\n"))
-						
-					cat("\n")
-
-					cat(paste("Box-Cox lambda estimate =", round(res$EL$Global$lambda,4),"\n"))
-					cat("\n")
-
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4), round(res$EL$Global$pvalue.healthy.transformed,4), round(res$EL$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
-				}
-
-
-				else if (res$EL$Global$normality.transformed == "no")
-				{
-					cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
-					cat(paste("can not be considered normally distributed in both groups.\n")) 
-					cat(paste("After transforming the marker using the Box-Cox transformation \n"))
-					cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
-					cat(paste("transformed marker can not be considered normally distributed \n"))
-					cat(paste("in both groups.\n"))
-					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
-					cat(paste("You must use the EL method instead.\n"))
-				
-					cat("\n")
-
-					cat(paste("Box-Cox lambda estimate =", round(res$EL$Global$lambda,4),"\n"))
-					cat("\n")
-
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4), round(res$EL$Global$pvalue.healthy.transformed,4), round(res$EL$Global$pvalue.diseased.transformed,4)), ncol=2,dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))	
-				}
-
-			}
-		}	
-	}
-	else
-        {
-		for(i in 1:length(levels.cat))
-		{
-			if(!"normality.transformed" %in% names(res$EL[[i]]))
-			{
-				cat(paste(levels.cat[i],": \n"))
-				cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
-				cat(paste("considered normally distributed in both groups.\n"))
-				cat(paste("Therefore, although the results of both methods will be shown,\n"))
-				cat(paste("the GPQ method would be more suitable for this dataset.\n"))
-
-			      cat("\n")
-
-				cat("Shapiro-Wilk test p-values\n")
-                        cat("\n")
-
-				print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
-				cat("\n")
-			}
-			
-			else
-			{
-				if (res$EL[[i]][["normality.transformed"]] == "yes")
-				{
-					cat(paste(levels.cat[i],":\n"))
-					cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
-					cat(paste("be considered normally distributed in both groups.\n"))
-					cat(paste("However, after transforming the marker using the Box-Cox \n"))
-					cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
-					cat(paste("indicates that the transformed marker can be considered \n"))
-					cat(paste("normally distributed in both groups.\n"))
-					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the GPQ method would be more suitable for this dataset.\n"))
-					
-					cat("\n")
-
-					cat(paste("Box-Cox lambda estimate =", round(res$EL[[i]][["lambda"]],4),"\n"))
-					cat("\n")
-
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4), round(res$EL[[i]][["pvalue.healthy.transformed"]],4), round(res$EL[[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
-					cat("\n")
-				}
-
-				else if (res$EL[[i]][["normality.transformed"]] == "no")	            
-				{
-					cat(paste(levels.cat[i],":\n"))
-					cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
-					cat(paste("can not be considered normally distributed in both groups.\n")) 
-					cat(paste("After transforming the marker using the Box-Cox transformation \n"))
-					cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
-					cat(paste("transformed marker can not be considered normally distributed \n"))
-					cat(paste("in both groups.\n")) 
-					cat(paste("Therefore, although the results of both methods will be shown,\n"))
-					cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
-					cat(paste("You must use the EL method instead.\n"))
-		
-					cat("\n")
-
-					cat(paste("Box-Cox lambda estimate =", round(res$EL[[i]][["lambda"]],4),"\n"))
-					cat("\n")
-
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4), round(res$EL[[i]][["pvalue.healthy.transformed"]],4), round(res$EL[[i]][["pvalue.diseased.transformed"]],4)), ncol=2,dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
-					cat("\n")
-				}
-		 	}
-          	}
-    	}
-
-    }
-
-    else
-    {
-	if (methods == "EL")
-	{
-		if (is.null(categorical.cov))
-            {
-			if(!"normality.transformed" %in% names(res$EL$Global))
-			{
-				cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
-				cat(paste("considered normally distributed in both groups.\n"))
-				cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
-				cat("\n")
-
-
-				cat("Shapiro-Wilk test p-values\n")
-                        cat("\n")
-
-				print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
-			}
-			else 
-			{
-				if (res$EL$Global$normality.transformed == "yes")		
-				{
-					cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
-					cat(paste("be considered normally distributed in both groups.\n")) 
-					cat(paste("However, after transforming the marker using the Box-Cox \n"))
-					cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
-					cat(paste("indicates that the transformed marker can be considered \n"))
-					cat(paste("normally distributed in both groups.\n"))
-					cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
-
-					cat("\n")
-
-					cat(paste("Box-Cox lambda estimate =", round(res$EL$Global$lambda,4),"\n"))
-					cat("\n")
-
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4), round(res$EL$Global$pvalue.healthy.transformed,4), round(res$EL$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					if (is.null(res$GPQ$Global$pvalue.healthy) & is.null(res$GPQ$Global$pvalue.diseased))
+					{
+						print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					}					
 				}
 			}
 		}
-		else
+
+		else        
 		{
 			for(i in 1:length(levels.cat))
 			{
-				if(!"normality.transformed" %in% names(res[[1]][[i]]))
+				if(!"normality.transformed" %in% names(res$EL[[i]]))
 				{
-					cat(paste(levels.cat[i],":\n"))
+					cat(paste(levels.cat[i],": \n"))
 					cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
-					cat(paste("considered normally distributed in both groups. \n"))
-					cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
+					cat(paste("considered normally distributed in both groups.\n"))
+					cat(paste("Therefore, although the results of both methods will be shown,\n"))
+					cat(paste("the GPQ method would be more suitable for this dataset.\n"))
 
-			            cat("\n")
+			      		cat("\n")
 
 					cat("Shapiro-Wilk test p-values\n")
-                              cat("\n")
+                        		cat("\n")
 
-					print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
+					print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))					
 					cat("\n")
 				}
-
-				else 
+			
+				else
 				{
-					if (res[[1]][[i]][["normality.transformed"]] == "yes") 
+					if (res$EL[[i]][["normality.transformed"]] == "yes")
 					{
 						cat(paste(levels.cat[i],":\n"))
+						cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
+						cat(paste("be considered normally distributed in both groups.\n"))
+						cat(paste("However, after transforming the marker using the Box-Cox \n"))
+						cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
+						cat(paste("indicates that the transformed marker can be considered \n"))
+						cat(paste("normally distributed in both groups.\n"))
+						cat(paste("Therefore, although the results of both methods will be shown,\n"))
+						cat(paste("the GPQ method would be more suitable for this dataset.\n"))
+					
+						cat("\n")
+
+						cat(paste("Box-Cox lambda estimate =", round(res$EL[[i]][["lambda"]],4),"\n"))
+						cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")
+
+						print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4), round(res$EL[[i]][["pvalue.healthy.transformed"]],4), round(res$EL[[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						cat("\n")
+					}
+
+					else if (res$EL[[i]][["normality.transformed"]] == "no")	            
+					{
+						cat(paste(levels.cat[i],":\n"))
+
+						if (is.null(res$EL[[i]][["pvalue.healthy"]]) | is.null(res$EL[[i]][["pvalue.diseased"]]))					
+						{
+							cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+							cat(paste("Therefore, although the results of both methods will be shown,\n"))
+							cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
+							cat(paste("You must use the EL method instead.\n"))	
+						}
+
+						else
+						{
+							cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+							cat(paste("can not be considered normally distributed in both groups.\n")) 
+							cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+							cat(paste("estimate, the Shapiro-Wilk normality test indicates that the \n"))
+							cat(paste("transformed marker can not be considered normally distributed \n"))
+							cat(paste("in both groups.\n")) 
+							cat(paste("Therefore, although the results of both methods will be shown,\n"))
+							cat(paste("the results obtained with the GPQ method may not be reliable.\n"))
+							cat(paste("You must use the EL method instead.\n"))
+						}
+		
+						cat("\n")
+
+						cat(paste("Box-Cox lambda estimate =", round(res$EL[[i]][["lambda"]],4),"\n"))
+						cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")
+
+						if (!is.null(res$EL[[i]][["pvalue.healthy"]]) & !is.null(res$EL[[i]][["pvalue.diseased"]]))					
+						{
+							print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4), round(res$EL[[i]][["pvalue.diseased"]],4), round(res$EL[[i]][["pvalue.healthy.transformed"]],4), round(res$EL[[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$EL[[i]][["pvalue.healthy"]]) & !is.null(res$EL[[i]][["pvalue.diseased"]]))
+						{
+							print(matrix(c("NULL", round(res$EL[[i]][["pvalue.diseased"]],4), "NULL", round(res$EL[[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (!is.null(res$EL[[i]][["pvalue.healthy"]]) & is.null(res$EL[[i]][["pvalue.diseased"]]))
+						{								
+							print(matrix(c(round(res$EL[[i]][["pvalue.healthy"]],4),"NULL", round(res$EL[[i]][["pvalue.healthy.transformed"]],4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$EL[[i]][["pvalue.healthy"]]) & is.null(res$EL[[i]][["pvalue.diseased"]]))
+						{
+							print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+						
+						cat("\n")
+					}
+		 		} 
+          		} 
+    		} 
+    	}
+
+	else  
+	{
+		if (methods == "EL")
+		{
+			if (is.null(categorical.cov))
+            	{
+				if(!"normality.transformed" %in% names(res$EL$Global))
+				{
+					cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
+					cat(paste("considered normally distributed in both groups.\n"))
+					cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
+					cat("\n")
+
+					cat("Shapiro-Wilk test p-values\n")
+                        		cat("\n")					
+					print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
+				}
+				else 
+				{
+					if (res$EL$Global$normality.transformed == "yes")		
+					{
 						cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
 						cat(paste("be considered normally distributed in both groups.\n")) 
 						cat(paste("However, after transforming the marker using the Box-Cox \n"))
 						cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
 						cat(paste("indicates that the transformed marker can be considered \n"))
-						cat(paste("normally distributed in both groups.\n")) 
+						cat(paste("normally distributed in both groups.\n"))
 						cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
-
 						cat("\n")
 
-						cat(paste("Box-Cox lambda estimate =", round(res[[1]][[i]][["lambda"]],4),"\n"))
+						cat(paste("Box-Cox lambda estimate =", round(res$EL$Global$lambda,4),"\n"))
 						cat("\n")
 
-						cat("Shapiro-Wilk test p-values\n")
-
-						print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
-						cat("\n")
+						cat("Shapiro-Wilk test p-values\n")						
+						print(matrix(c(round(res$EL$Global$pvalue.healthy,4), round(res$EL$Global$pvalue.diseased,4), round(res$EL$Global$pvalue.healthy.transformed,4), round(res$EL$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
 					}
 				}
 			}
 
-
-		}
-
-	}
-
-	if (methods == "GPQ")
-	{
-		if (is.null(categorical.cov))
-            	{
-			if ("normality.transformed" %in% names(res$GPQ$Global))
+			else              
 			{
-				if(res$GPQ$Global$normality.transformed == "no")
+				for(i in 1:length(levels.cat))
 				{
-					cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
-					cat(paste("can not be considered normally distributed in both groups.\n")) 
-					cat(paste("After transforming the marker using the Box-Cox transformation \n"))
-					cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
-					cat(paste("transformed marker can not be considered normally distributed \n"))
-					cat(paste("in both groups. \n"))
-					cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
-					cat(paste("reliable. You must use the EL method instead.\n"))
-					cat("\n")
+					if(!"normality.transformed" %in% names(res[[1]][[i]]))
+					{
+						cat(paste(levels.cat[i],":\n"))
+						cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
+						cat(paste("considered normally distributed in both groups. \n"))
+						cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
+			            		cat("\n")
 
+						cat("Shapiro-Wilk test p-values\n")
+                              			cat("\n")						
+						print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
+						cat("\n")
+					}
+					else 
+					{
+						if (res[[1]][[i]][["normality.transformed"]] == "yes") 
+						{
+							cat(paste(levels.cat[i],":\n"))
+							cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
+							cat(paste("be considered normally distributed in both groups.\n")) 
+							cat(paste("However, after transforming the marker using the Box-Cox \n"))
+							cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
+							cat(paste("indicates that the transformed marker can be considered \n"))
+							cat(paste("normally distributed in both groups.\n")) 
+							cat(paste("Therefore the GPQ method would be more suitable for this dataset.\n"))
+							cat("\n")
 
-					cat(paste("Box-Cox lambda estimate =", round(res$GPQ$Global$lambda,4),"\n"))
-					cat("\n")
+							cat(paste("Box-Cox lambda estimate =", round(res[[1]][[i]][["lambda"]],4),"\n"))
+							cat("\n")
 
-					cat("Shapiro-Wilk test p-values\n")
-
-					print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4), round(res$GPQ$Global$pvalue.healthy.transformed,4), round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2,dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							cat("Shapiro-Wilk test p-values\n")							
+							print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							cat("\n")
+						}
+					}
 				}
-
 			}
 		}
 
-		else
+		if (methods == "auto")
 		{
-			for(i in 1:length(levels.cat))
+			if (is.null(categorical.cov))
+            		{
+				if(!"normality.transformed" %in% names(res$auto$Global))
+				{
+					cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
+					cat(paste("considered normally distributed in both groups.\n"))
+					cat(paste("Therefore the program selects automatically the GPQ method for this dataset.\n"))
+					cat("\n")
+
+					cat("Shapiro-Wilk test p-values\n")
+                        		cat("\n")					
+					print(matrix(c(round(res$auto$Global$pvalue.healthy,4), round(res$auto$Global$pvalue.diseased,4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
+				}
+
+				else 
+				{
+					if (res$auto$Global$normality.transformed == "yes")		
+					{
+						cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
+						cat(paste("be considered normally distributed in both groups.\n")) 
+						cat(paste("However, after transforming the marker using the Box-Cox \n"))
+						cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
+						cat(paste("indicates that the transformed marker can be considered \n"))
+						cat(paste("normally distributed in both groups.\n"))
+						cat(paste("Therefore the program selects automatically the GPQ method for this dataset.\n"))
+
+						cat("\n")
+						cat(paste("Box-Cox lambda estimate =", round(res$auto$Global$lambda,4),"\n"))
+						cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")						
+						print(matrix(c(round(res$auto$Global$pvalue.healthy,4), round(res$auto$Global$pvalue.diseased,4), round(res$auto$Global$pvalue.healthy.transformed,4), round(res$auto$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+					}
+
+					if (res$auto$Global$normality.transformed == "no")
+					{
+						if (is.null(res$auto$Global$pvalue.healthy) | is.null(res$auto$Global$pvalue.diseased))					
+						{
+							cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+							cat(paste("Therefore, the program selects automatically the EL method. \n"))						
+						}
+						else
+						{
+							cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+							cat(paste("can not be considered normally distributed in both groups.\n")) 
+							cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+							cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
+							cat(paste("transformed marker can not be considered normally distributed \n"))
+							cat(paste("in both groups. \n"))
+							cat(paste("Therefore, the program selects automatically the EL method for this dataset. \n"))
+						}
+						cat("\n")
+
+						cat(paste("Box-Cox lambda estimate =", round(res$auto$Global$lambda,4),"\n"))
+						cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")
+
+						if (!is.null(res$auto$Global$pvalue.healthy) & !is.null(res$auto$Global$pvalue.diseased))					
+						{
+							print(matrix(c(round(res$auto$Global$pvalue.healthy,4), round(res$auto$Global$pvalue.diseased,4), round(res$auto$Global$pvalue.healthy.transformed,4), round(res$auto$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$auto$Global$pvalue.healthy) & !is.null(res$auto$Global$pvalue.diseased))
+						{
+							print(matrix(c("NULL", round(res$auto$Global$pvalue.diseased,4), "NULL", round(res$auto$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (!is.null(res$auto$Global$pvalue.healthy) & is.null(res$auto$Global$pvalue.diseased))
+						{
+							print(matrix(c(round(res$auto$Global$pvalue.healthy,4),"NULL", round(res$auto$Global$pvalue.healthy.transformed,4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$auto$Global$pvalue.healthy) & is.null(res$auto$Global$pvalue.diseased))
+						{
+							print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}						
+					}
+				}
+			}
+
+			else
 			{
-                              if ("normality.transformed" %in% names(res[[1]][[i]]))
-      				{
+				for(i in 1:length(levels.cat))
+				{
+					if(!"normality.transformed" %in% names(res[[1]][[i]]))
+					{
+						cat(paste(levels.cat[i],":\n"))
+						cat(paste("According to the Shapiro-Wilk normality test, the marker can be \n"))
+						cat(paste("considered normally distributed in both groups. \n"))
+						cat(paste("Therefore the program selects automatically the GPQ method for this dataset.\n"))
+			            		cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")
+                              			cat("\n")						
+						print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker"),c("Group 0","Group 1"))))
+						cat("\n")
+					}
+
+					else 
+					{
+						if (res[[1]][[i]][["normality.transformed"]] == "yes") 
+						{
+							cat(paste(levels.cat[i],":\n"))
+							cat(paste("According to the Shapiro-Wilk normality test, the marker can not \n"))
+							cat(paste("be considered normally distributed in both groups.\n")) 
+							cat(paste("However, after transforming the marker using the Box-Cox \n"))
+							cat(paste("transformation estimate, the Shapiro-Wilk normality test \n"))
+							cat(paste("indicates that the transformed marker can be considered \n"))
+							cat(paste("normally distributed in both groups.\n")) 
+							cat(paste("Therefore the program selects automatically the GPQ method for this dataset.\n"))
+							cat("\n")
+
+							cat(paste("Box-Cox lambda estimate =", round(res[[1]][[i]][["lambda"]],4),"\n"))
+							cat("\n")
+
+							cat("Shapiro-Wilk test p-values\n")							
+							print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							cat("\n")
+						}
 
 						if (res[[1]][[i]][["normality.transformed"]] == "no")
 						{
 							cat(paste(levels.cat[i],":\n"))
-							cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
-							cat(paste("can not be considered normally distributed in both groups.\n"))
-							cat(paste("After transforming the marker using the Box-Cox transformation \n"))
-							cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
-							cat(paste("transformed marker can not be considered normally distributed \n"))
-							cat(paste("in both groups.\n"))
-							cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
-							cat(paste("reliable. You must use the EL method instead.\n"))
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) | is.null(res[[1]][[i]][["pvalue.diseased"]]))					
+							{
+								cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+								cat(paste("Therefore, the program selects automatically the EL method. \n"))						
+							}
+							else
+							{
+								cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+								cat(paste("can not be considered normally distributed in both groups.\n"))
+								cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+								cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
+								cat(paste("transformed marker can not be considered normally distributed \n"))
+								cat(paste("in both groups.\n"))
+								cat(paste("Therefore, the program selects automatically the EL method for this dataset. \n"))
+							}
 							cat("\n")
 
 							cat(paste("Box-Cox lambda estimate =", round(res[[1]][[i]][["lambda"]],4),"\n"))
 							cat("\n")
 
 							cat("Shapiro-Wilk test p-values\n")
+							if (!is.null(res[[1]][[i]][["pvalue.healthy"]]) & !is.null(res[[1]][[i]][["pvalue.diseased"]]))					
+							{
+								print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
 
-							print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2,dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) & !is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c("NULL", round(res[[1]][[i]][["pvalue.diseased"]],4), "NULL", round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+
+							if (!is.null(res[[1]][[i]][["pvalue.healthy"]]) & is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4),"NULL", round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) & is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+							cat("\n")
+						}
+					}
+				}
+			}
+		}
+
+		if (methods == "GPQ")
+		{
+			if (is.null(categorical.cov))
+            	{
+				if ("normality.transformed" %in% names(res$GPQ$Global))
+				{					
+					if(res$GPQ$Global$normality.transformed == "no")
+					{
+						if (is.null(res$GPQ$Global$pvalue.healthy) | is.null(res$GPQ$Global$pvalue.diseased))					
+						{
+							cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+							cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
+							cat(paste("reliable. You must use the EL method instead.\n"))						
+						}
+						else
+						{
+							cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+							cat(paste("can not be considered normally distributed in both groups.\n")) 
+							cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+							cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
+							cat(paste("transformed marker can not be considered normally distributed \n"))
+							cat(paste("in both groups. \n"))
+							cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
+							cat(paste("reliable. You must use the EL method instead.\n"))
+						}
+						cat("\n")
+
+						cat(paste("Box-Cox lambda estimate =", round(res$GPQ$Global$lambda,4),"\n"))
+						cat("\n")
+
+						cat("Shapiro-Wilk test p-values\n")
+
+						if (!is.null(res$GPQ$Global$pvalue.healthy) & !is.null(res$GPQ$Global$pvalue.diseased))					
+						{
+							print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4), round(res$GPQ$Global$pvalue.diseased,4), round(res$GPQ$Global$pvalue.healthy.transformed,4), round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$GPQ$Global$pvalue.healthy) & !is.null(res$GPQ$Global$pvalue.diseased))
+						{
+							print(matrix(c("NULL", round(res$GPQ$Global$pvalue.diseased,4), "NULL", round(res$GPQ$Global$pvalue.diseased.transformed,4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (!is.null(res$GPQ$Global$pvalue.healthy) & is.null(res$GPQ$Global$pvalue.diseased))
+						{
+							print(matrix(c(round(res$GPQ$Global$pvalue.healthy,4),"NULL", round(res$GPQ$Global$pvalue.healthy.transformed,4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}
+
+						if (is.null(res$GPQ$Global$pvalue.healthy) & is.null(res$GPQ$Global$pvalue.diseased))
+						{
+							print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+						}	
+					}
+				}
+			}
+
+			else
+			{
+				for(i in 1:length(levels.cat))
+				{
+                              		if ("normality.transformed" %in% names(res[[1]][[i]]))
+      					{
+						if (res[[1]][[i]][["normality.transformed"]] == "no")
+						{
+							cat(paste(levels.cat[i],":\n"))
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) | is.null(res[[1]][[i]][["pvalue.diseased"]]))					
+							{
+								cat(paste("Due to the sample size, the Shapiro-Wilk normality test can not be performed \n"))
+								cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
+								cat(paste("reliable. You must use the EL method instead.\n"))						
+							}
+							else
+							{	
+								cat(paste("According to the Shapiro-Wilk normality test, the original marker \n"))
+								cat(paste("can not be considered normally distributed in both groups.\n"))
+								cat(paste("After transforming the marker using the Box-Cox transformation \n"))
+								cat(paste("estimate the Shapiro-Wilk normality test indicates that the \n"))
+								cat(paste("transformed marker can not be considered normally distributed \n"))
+								cat(paste("in both groups.\n"))
+								cat(paste("Therefore, the results obtained with the GPQ method may not be \n"))
+								cat(paste("reliable. You must use the EL method instead.\n"))
+							}
+							cat("\n")
+
+							cat(paste("Box-Cox lambda estimate =", round(res[[1]][[i]][["lambda"]],4),"\n"))
+							cat("\n")						
+
+							cat("Shapiro-Wilk test p-values\n")
+
+							if (!is.null(res[[1]][[i]][["pvalue.healthy"]]) & !is.null(res[[1]][[i]][["pvalue.diseased"]]))					
+							{
+								print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4), round(res[[1]][[i]][["pvalue.diseased"]],4), round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) & !is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c("NULL", round(res[[1]][[i]][["pvalue.diseased"]],4), "NULL", round(res[[1]][[i]][["pvalue.diseased.transformed"]],4)), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+
+							if (!is.null(res[[1]][[i]][["pvalue.healthy"]]) & is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c(round(res[[1]][[i]][["pvalue.healthy"]],4),"NULL", round(res[[1]][[i]][["pvalue.healthy.transformed"]],4), "NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+
+							if (is.null(res[[1]][[i]][["pvalue.healthy"]]) & is.null(res[[1]][[i]][["pvalue.diseased"]]))
+							{
+								print(matrix(c("NULL","NULL","NULL","NULL"), ncol=2, byrow=T, dimnames=list(c("Original marker", "Box-Cox transformed marker"),c("Group 0","Group 1"))))
+							}
+							
 							cat("\n")
 						}
 
 					}
+				}
 			}
-
 		}
 
-	}
+  	}
+ }
 
-  }
-
-
-  if(length(levels.cat) != 1) res$levels.cat  <-  levels.cat
+if(length(levels.cat) != 1) res$levels.cat  <-  levels.cat
   res$call <- match.call()
   res$data <- data
 

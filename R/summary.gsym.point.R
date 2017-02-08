@@ -23,8 +23,8 @@ function(object, ...) {
 				}
 			}
 		}
-  	res[[i]][[length(methods)+1]] <- round(methods[[1]][[i]][["AUC"]][[1]], 3)
-      names(res[[i]]) <- c(names(methods), "AUC")
+  		res[[i]][[length(methods)+1]] <- round(methods[[1]][[i]][["AUC"]][[1]], 3)
+      		names(res[[i]]) <- c(names(methods), "AUC")
 	}
 
 	names(res) <- levels.cat

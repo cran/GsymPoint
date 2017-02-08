@@ -1,5 +1,5 @@
 function.EL <-
-function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym.point(), confidence.level)
+function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym.point(), confidence.level, seed, value.seed)
 {
   # Marker in the healthy population:
   X0 <- data[data[,status] == tag.healthy, marker]
@@ -33,6 +33,11 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
   # populations, respectively
   b0 = constant1*sd(X0)*n0^(-0.2)
   b1 = constant1*sd(X1)*n1^(-0.2)
+
+  if(seed == TRUE) 
+  {
+	set.seed (value.seed)
+  }
 
   # First resampling for finding the initial t:
   ele = 1
@@ -74,7 +79,7 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
     if (w0b > 0)
     {
 	parameters = c(rho,w0b,x0b)
-      f_lower = cOpt_gsym_kernel(lower, parameters)
+      	f_lower = cOpt_gsym_kernel(lower, parameters)
   	f_upper = cOpt_gsym_kernel(upper, parameters)
 	value1 = f_lower*f_upper
     }
@@ -89,7 +94,7 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
     if (w11b > 0)
     {
 	parameters = c(rho,w11b,x1b)
-      f_lower = cOpt_gsym2_kernel(lower2, parameters)
+      	f_lower = cOpt_gsym2_kernel(lower2, parameters)
 	f_upper = cOpt_gsym2_kernel(upper2, parameters)
 	value2 = f_lower*f_upper
     }
@@ -228,23 +233,25 @@ function(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym
   senhat_b = sort(senhat_b)
   CIEL_sen[1,1:2] = c(senhat_b[(B+1)*(1-confidence.level)/2],senhat_b[(B+1)*(1-(1-confidence.level)/2)])
   
-  optimal.cutoff <- matrix(ncol=3, nrow = length(chat))
+  c.names <- c("Value", "ll", "ul")
+
+  optimal.cutoff <- matrix(ncol=3, nrow = length(chat),dimnames = list(1:length(chat), c.names))
 
   optimal.cutoff [,1] <- chat
   optimal.cutoff [,-1] <- CIEL_c
 
-  Sp <- matrix(ncol=3, nrow = length(chat))
+  Sp <- matrix(ncol=3, nrow = length(chat),dimnames = list(1:length(chat), c.names))
   Sp[,1] <- spehat
   Sp[,-1] <- CIEL_spe
 
-  Se <- matrix(ncol=3, nrow = length(chat))
+  Se <- matrix(ncol=3, nrow = length(chat),dimnames = list(1:length(chat), c.names))
   Se[,1] <- senhat
   Se[,-1] <- CIEL_sen
-
+  
   optimal.result <- list(cutoff = optimal.cutoff, Specificity = Sp, Sensitivity = Se)
-  AUC <- calculate.empirical.AUC(data, marker, status, tag.healthy, confidence.level)
+  AUC <- calculate.empirical.AUC(data, marker, status, tag.healthy)
 
-  GPQ <- function.GPQ(data, marker, status, tag.healthy = 0, CFN, CFP, control = control.gsym.point(), confidence.level)
+  GPQ <- function.GPQ(data, marker, status, tag.healthy, CFN, CFP, control = control.gsym.point(), confidence.level, seed=seed, value.seed=value.seed)
 
   # If original data are not normally distributed:
   if ("lambda" %in% names(GPQ))     
