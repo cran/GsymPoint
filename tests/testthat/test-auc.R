@@ -8,9 +8,7 @@ test_that("Toy example with ties", {
   expect_equal(my.auc, 0.4*0.6+(0.6+0.8)*0.2/2+0.2*1)
 })
 
-
 test_that("Melanoma example without ties", {
-  # library(ROCR)
   data(melanoma)
   pred <- prediction(melanoma$X, melanoma$group)
   ROCR.auc <- performance(pred, "auc")@y.values[[1]]
@@ -18,9 +16,7 @@ test_that("Melanoma example without ties", {
   expect_equal(my.auc, ROCR.auc)
 })
 
-
 test_that("Prostate example with ties", {
-  # library(ROCR)
   data(prostate)
   pred <- prediction(prostate$marker, prostate$status)
   ROCR.auc <- performance(pred, "auc")@y.values[[1]]
@@ -28,15 +24,10 @@ test_that("Prostate example with ties", {
   expect_equal(my.auc, ROCR.auc)
 })
 
-
 test_that("Coronary artery example with ties", {
-  # library(ROCR)
   data(elastase)
   pred <- prediction(elastase$elas, elastase$status)
   ROCR.auc <- performance(pred, "auc")@y.values[[1]]
   my.auc <- calculate.empirical.AUC(data = elastase, marker = "elas", status = "status", tag.healthy = 0)
   expect_equal(my.auc, ROCR.auc)
 })
-
-
-

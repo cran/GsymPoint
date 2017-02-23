@@ -1,4 +1,3 @@
-
 import(truncnorm,Rsolnp,ROCR)
 importFrom("graphics","lines","par","legend", "points")
 importFrom("stats","na.omit","pnorm","qnorm","rchisq","rnorm", "rt", "sd", "shapiro.test", "uniroot", "var")
@@ -9,5 +8,3 @@ S3method(print, gsym.point)
 S3method(print, summary.gsym.point)
 S3method(summary, gsym.point)
 S3method(plot, gsym.point)
-
-

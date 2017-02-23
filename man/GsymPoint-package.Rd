@@ -14,8 +14,8 @@ One of the best-known methods is based on the Symmetry point, also known in the 
 \tabular{ll}{
 Package: \tab GsymPoint\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2016-12-21\cr
+Version: \tab 1.1.1\cr
+Date: \tab 2017-02-22\cr
 License: \tab GPL\cr
 }
 

@@ -34,7 +34,7 @@ a numerical value meaningful only in the "GPQ" method. It specifies the number o
 The value yielded by this function is used as the control argument of the \code{gsym.point()}function.
 }
 \author{
-\enc{M?nica}{Monica} \enc{L?pez}{Lopez}-\enc{Rat?n}{Raton}, Carmen Cadarso-\enc{Su?rez}{Suarez}, Elisa M. Molanes-\enc{L?pez}{Lopez} and Emilio \enc{Let?n}{Leton}
+\enc{Mónica}{Monica} \enc{López}{Lopez}-\enc{Ratón}{Raton}, Carmen Cadarso-\enc{Suárez}{Suarez}, Elisa M. Molanes-\enc{López}{Lopez} and Emilio \enc{Letón}{Leton}
 }
 
 \seealso{

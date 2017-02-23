@@ -1,23 +1,14 @@
 citHeader("To cite GsymPoint in publications use:")
 
-citEntry(entry = "Article",
-  title        = "{GsymPoint}: An {R} Package to Estimate the Generalized Symmetry Point,
-      												 an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests",
-  author       = personList(as.person("M{\\'o}nica L{\\'o}pez-Rat{\\'o}n"),
-                   as.person("Elisa M. Molanes-L{\\'o}pez"),
-                   as.person("Emilio Let{\\'o}n"),
-                   as.person("Carmen Cadarso Su{\\'a}rez")),
-  journal      = "The R Journal (accepted)",
-  year         = "2017",
-  volume       = "",
-  number       = "",
-  pages        = "",
-  url          = "",
-
-  textVersion  =
-  paste("Monica Lopez-Raton, Maria Xose Rodriguez-Alvarez, Carmen Cadarso Suarez, Francisco Gude Sampedro (2017).",
-        "GsymPoint: An R Package to Estimate the Generalized Symmetry Point,
-      							an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests.",
-        "The R Journal (accepted).")
+citEntry(
+  entry = "Article",
+  title = "{GsymPoint}: An {R} Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests",
+  author = personList(as.person("L{\\'o}pez-Rat{\\'o}n M."), as.person("Molanes-L{\\'o}pez E.M."), as.person("Let{\\'o}n E."), as.person("Cadarso Su{\\'a}rez C.")),
+  journal = "The R Journal (accepted)",
+  year = "2017",
+  volume = "",
+  number = "",
+  pages = "",
+  url = "",
+  textVersion = paste("López-Ratón M., Molanes-López E.M., Letón E. and Cadarso Suárez C. (2017).", "GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests.", "The R Journal (accepted).")
 )
-

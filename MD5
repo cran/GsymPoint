@@ -1,5 +1,5 @@
-cc9d837e9ed4d6a61660adbdaae64b55 *DESCRIPTION
-712925f279dd858a4f291e343a514b78 *NAMESPACE
+dc68234aad29e817df900fb6be81cbd3 *DESCRIPTION
+9a440f4914e0e8d73488a887b7d9841c *NAMESPACE
 8e9ca507532be8b245da5bed8aa9a91d *R/BoxCox_binormal_MLestimate.R
 c7ac7832f3886dc0a6fb011778d743a7 *R/ELquantiles_gsym.R
 08050cfc1068f3d44590d79a2ddd41a6 *R/cOpt_gsym.R
@@ -27,10 +27,10 @@ f2e8e4e7565ef041669d7edd2750c0f3 *R/relative_sample.R
 d8f4c66c95ebdef9d1a7c3ac7daadbe2 *data/elastase.rda
 d783ad58f147477c4df0ba7776db5a30 *data/melanoma.rda
 f57aaba12b835d89f0043d21afc6f03f *data/prostate.rda
-5731ec5d1fcc4166a1860e5b5f7da583 *inst/CITATION
-1785f7293859e61f08fb8f067a82e02d *inst/NEWS
-79c602d1346f187636b65ee736129b4a *man/GsymPoint-package.Rd
-89c95451d9997a03c540e8915f466a51 *man/control.gsym.point.Rd
+f0b6dfb2587c3cd157649f42db54afd8 *inst/CITATION
+9da873190eda344155e96e9c8f0a4934 *inst/NEWS
+ddb92dd52d1a0adb226da133b8f62a89 *man/GsymPoint-package.Rd
+ced74a7710f9beebaffd612de8cb91f5 *man/control.gsym.point.Rd
 c2849c4722b6d5f0dde114557825b0c7 *man/elastase.Rd
 89a7f36ff5163a91880705eb51651ace *man/gsym.point.Rd
 fd29e87ec4aa4999f383d1b4b7b69949 *man/melanoma.Rd
@@ -38,5 +38,5 @@ fd29e87ec4aa4999f383d1b4b7b69949 *man/melanoma.Rd
 bf364eadfc29dddb6991f81800c2c049 *man/print.gsym.point.Rd
 7f8ccce420ddc228b9a8da2be66d17fb *man/prostate.Rd
 1e1a9292149ab9a836f0cdf147ed8d85 *man/summary.gsym.point.Rd
-6ca7974499677bcefd4dc57397148a5e *tests/testthat.R
-55cd1c24216033681a4978c8b3fe2ed4 *tests/testthat/test-auc.R
+0fb32704a60c2b7e34f9dbc6a1ac882f *tests/testthat.R
+4859d4b16225e00a8b42740fb38fbb5d *tests/testthat/test-auc.R
