@@ -18,20 +18,13 @@ The \code{elastase} dataset was obtained from a study carried out in the Cardiol
 }
 
 \source{
-Amaro, A., Gude, F., \enc{González}{Gonzalez}-Juanatey, R., Iglesias, C., \enc{Fernández}{Fernandez}-\enc{Vázquez}{Vazquez}, F., \enc{García}{Garcia}-\enc{Acuña}{Acuna}, J. and Gil, M. (1995). Plasma leukocyte elastase concentration in angiographically diagnosed coronary artery disease. \emph{European Heart Journal} \bold{16}, 615--622.
+Amaro, A., Gude, F., \enc{GonzÃ¡lez}{Gonzalez}-Juanatey, R., Iglesias, C., \enc{FernÃ¡ndez}{Fernandez}-\enc{VÃ¡zquez}{Vazquez}, F., \enc{GarcÃ­a}{Garcia}-\enc{AcuÃ±a}{Acuna}, J. and Gil, M. (1995). Plasma leukocyte elastase concentration in angiographically diagnosed coronary artery disease. \emph{European Heart Journal} \bold{16}, 615--622.
 }
 \references{
-Amaro, A., Gude, F., \enc{González}{Gonzalez}-Juanatey, R., Iglesias, C., \enc{Fernández}{Fernandez}-\enc{Vázquez}{Vazquez}, F., \enc{García}{Garcia}-\enc{Acuña}{Acuna}, J. and Gil, M. (1995). Plasma leukocyte elastase concentration in angiographically diagnosed coronary artery disease. \emph{European Heart Journal} \bold{16}, 615--622.
+Amaro, A., Gude, F., \enc{GonzÃ¡lez}{Gonzalez}-Juanatey, R., Iglesias, C., \enc{FernÃ¡ndez}{Fernandez}-\enc{VÃ¡zquez}{Vazquez}, F., \enc{GarcÃ­a}{Garcia}-\enc{AcuÃ±a}{Acuna}, J. and Gil, M. (1995). Plasma leukocyte elastase concentration in angiographically diagnosed coronary artery disease. \emph{European Heart Journal} \bold{16}, 615--622.
 }
 \examples{
 data(elastase)
 summary(elastase)
 }
 \keyword{datasets}
-
-
-
-
-
-
-

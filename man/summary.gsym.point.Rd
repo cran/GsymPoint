@@ -29,7 +29,7 @@ Returns an object of class "summary.gsym.point" with the same components as the 
 }
 
 \author{
-	\enc{M髇ica}{Monica} \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, Carmen Cadarso-\enc{Su醨ez}{Suarez}, Elisa M. Molanes-\enc{L髉ez}{Lopez} and Emilio \enc{Let髇}{Leton}
+	\enc{M贸nica}{Monica} \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, Carmen Cadarso-\enc{Su谩rez}{Suarez}, Elisa M. Molanes-\enc{L贸pez}{Lopez} and Emilio \enc{Let贸n}{Leton}
 }
 
 \seealso{

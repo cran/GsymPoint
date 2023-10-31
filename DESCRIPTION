@@ -2,25 +2,25 @@ Package: GsymPoint
 Type: Package
 Title: Estimation of the Generalized Symmetry Point, an Optimal
         Cutpoint in Continuous Diagnostic Tests
-Version: 1.1.1
-Date: 2017-02-22
+Version: 1.1.2
+Date: 2023-10-31
 Depends: truncnorm, Rsolnp, ROCR
 Authors@R: c(
-    person("M髇ica", "L髉ez-Rat髇", email = "monica.lopez.raton@gmail.com", role = c("aut","cre")),
-    person("Carmen", "Cadarso-Su醨ez", role = "aut"),
-    person("Elisa M.", "Molanes-L髉ez", role = "aut"),
-    person("Emilio", "Let髇", role = "aut"))
+    person("M贸nica", "L贸pez-Rat贸n", email = "monica.lopez.raton@gmail.com", role = c("aut","cre")),
+    person("Carmen", "Cadarso-Su谩rez", role = "aut"),
+    person("Elisa M.", "Molanes-L贸pez", role = "aut"),
+    person("Emilio", "Let贸n", role = "aut"))
 Description: Estimation of the cutpoint defined by the Generalized Symmetry point in a binary classification setting based on a continuous diagnostic test or marker. Two methods have been implemented to construct confidence intervals for this optimal cutpoint, one based on the Generalized Pivotal Quantity and the other based on Empirical Likelihood. Numerical and graphical outputs for these two methods are easily obtained.
 License: GPL
 LazyData: TRUE
 Suggests: testthat
-Encoding: latin1
+Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2017-02-22 12:29:37 UTC; Elisa
-Author: M髇ica L髉ez-Rat髇 [aut, cre],
-  Carmen Cadarso-Su醨ez [aut],
-  Elisa M. Molanes-L髉ez [aut],
-  Emilio Let髇 [aut]
-Maintainer: M髇ica L髉ez-Rat髇 <monica.lopez.raton@gmail.com>
+Packaged: 2023-10-31 18:09:19 UTC; user
+Author: M贸nica L贸pez-Rat贸n [aut, cre],
+  Carmen Cadarso-Su谩rez [aut],
+  Elisa M. Molanes-L贸pez [aut],
+  Emilio Let贸n [aut]
+Maintainer: M贸nica L贸pez-Rat贸n <monica.lopez.raton@gmail.com>
 Repository: CRAN
-Date/Publication: 2017-02-23 17:30:53
+Date/Publication: 2023-10-31 18:30:02 UTC

@@ -30,8 +30,3 @@ data(prostate)
 summary(prostate)
 }
 \keyword{datasets}
-
-
-
-
-

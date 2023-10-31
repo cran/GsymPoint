@@ -8,14 +8,14 @@ Estimation of the Generalized Symmetry Point, an Optimal Cutpoint in Continuous 
 \description{
 Continuous biomarkers or diagnostic tests are often used to discriminate between healthy and diseased populations. In clinical practice, it is useful to select an appropriate cutpoint or discrimination value \eqn{c} which defines the positive and negative test results. 
 Several methods for selecting optimal cutpoints in diagnostic tests in the sense of a specific optimality criterion have been proposed in the literature depending on the underlying reason for this choice (see for example, Youden, 1950; Pepe, 2003; Liu, 2012; Rota and Antolini, 2014). 
-One of the best-known methods is based on the Symmetry point, also known in the literature as the point of equivalence (Greiner et al., 1995; Defreitas et al., 2004; Adlhoch et al., 2011), defined as the point where the sensitivity and specificity measures are equal. Taking into account the costs associated to the false positives and false negatives misclassifications, the Generalized Symmetry point can be defined. This package allows the user to compute the Generalized Symmetry point as the optimal cutpoint for a diagnostic test or continuous marker. The two methods introduced in \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton} et al. (2016) for estimating the Generalized Symmetry point and its sensitivity and specificity accuracy measures have been implemented in this package. One of them is based on the Generalized Pivotal Quantity (Weerahandi, 1993; 1995) and the other based on Empirical Likelihood (Thomas and Grunkemeier, 1975). Numerical and graphical outputs for these two methods are easily obtained.
+One of the best-known methods is based on the Symmetry point, also known in the literature as the point of equivalence (Greiner et al., 1995; Defreitas et al., 2004; Adlhoch et al., 2011), defined as the point where the sensitivity and specificity measures are equal. Taking into account the costs associated to the false positives and false negatives misclassifications, the Generalized Symmetry point can be defined. This package allows the user to compute the Generalized Symmetry point as the optimal cutpoint for a diagnostic test or continuous marker. The two methods introduced in \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton} et al. (2016) for estimating the Generalized Symmetry point and its sensitivity and specificity accuracy measures have been implemented in this package. One of them is based on the Generalized Pivotal Quantity (Weerahandi, 1993; 1995) and the other based on Empirical Likelihood (Thomas and Grunkemeier, 1975). Numerical and graphical outputs for these two methods are easily obtained.
 }
 \details{
 \tabular{ll}{
 Package: \tab GsymPoint\cr
 Type: \tab Package\cr
-Version: \tab 1.1.1\cr
-Date: \tab 2017-02-22\cr
+Version: \tab 1.1.2\cr
+Date: \tab 2023-10-31\cr
 License: \tab GPL\cr
 }
 
@@ -28,9 +28,9 @@ The \code{summary.gsym.point()} and \code{plot.gsym.point()} functions produce n
 }
 
 \author{
-\enc{M髇ica}{Monica} \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, Carmen Cadarso-\enc{Su醨ez}{Suarez}, Elisa M. Molanes-\enc{L髉ez}{Lopez} and Emilio \enc{Let髇}{Leton}
+\enc{M贸nica}{Monica} \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, Carmen Cadarso-\enc{Su谩rez}{Suarez}, Elisa M. Molanes-\enc{L贸pez}{Lopez} and Emilio \enc{Let贸n}{Leton}
 
-Maintainer: \enc{M髇ica}{Monica} \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton} <monica.lopez.raton@gmail.com> 
+Maintainer: \enc{M贸nica}{Monica} \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton} <monica.lopez.raton@gmail.com> 
 }
 
 \references{
@@ -38,19 +38,13 @@ Adlhoch, C., Kaiser, M., Hoehne, M., Mas Marques, A., Stefas, I., Veas, F. and E
 
 Defreitas, G.A., Zimmern, P.E., Lemack, G.E. and Shariat, S.F. (2004). Refining diagnosis of anatomic female bladder outlet obstruction: comparison of pressureflow study parameters in clinically obstructed women with those of normal controls. \emph{Urology} \bold{64}, 675-679.
 
-Greiner, M., Sohr, D. and \enc{G鯾el}{Gobel}, P. (1995). A modified ROC analysis for the selection of cut-off values and the definition of intermediate results of serodiagnostic tests. \emph{Journal of Immunological Methods} \bold{185}, 123-132.
+Greiner, M., Sohr, D. and \enc{G枚bel}{Gobel}, P. (1995). A modified ROC analysis for the selection of cut-off values and the definition of intermediate results of serodiagnostic tests. \emph{Journal of Immunological Methods} \bold{185}, 123-132.
 
 Liu, X. (2012). Classification accuracy and cut point selection. \emph{Statistics in Medicine} \bold{31(23)}, 2676-2686.
 
-\enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, M., Cadarso-\enc{Su醨ez}{Suarez}, C., Molanes-\enc{L髉ez}{Lopez}, E.M. and \enc{Let髇}{Leton}, E. (2016). Confidence intervals for the Symmetry point: an optimal cutpoint in continuous diagnostic tests. \emph{Pharmaceutical Statistics} \bold{15(2)}, 178-192.
+\enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, M., Cadarso-\enc{Su谩rez}{Suarez}, C., Molanes-\enc{L贸pez}{Lopez}, E.M. and \enc{Let贸n}{Leton}, E. (2016). Confidence intervals for the Symmetry point: an optimal cutpoint in continuous diagnostic tests. \emph{Pharmaceutical Statistics} \bold{15(2)}, 178-192.
 
-\enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, M., Molanes-\enc{L髉ez}{Lopez}, E.M., \enc{Let髇}{Leton}, E. and Cadarso-\enc{Su醨ez}{Suarez}, C. (2017). GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests. \emph{The R Journal} (accepted).
+\enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, M., Molanes-\enc{L贸pez}{Lopez}, E.M., \enc{Let贸n}{Leton}, E. and Cadarso-\enc{Su谩rez}{Suarez}, C. (2017). GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests. \emph{The R Journal} \bold{9(1)}, 262-283.
 
 Pepe, M.S. (2003). \emph{The statistical evaluation of medical tests for classification and prediction}. Oxford University Press, New York.
 }
-
-
-
-
-
-

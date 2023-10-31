@@ -1,14 +1,14 @@
 citHeader("To cite GsymPoint in publications use:")
 
-citEntry(
-  entry = "Article",
+bibentry(
+  bibtype = "Article",
   title = "{GsymPoint}: An {R} Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests",
-  author = personList(as.person("L{\\'o}pez-Rat{\\'o}n M."), as.person("Molanes-L{\\'o}pez E.M."), as.person("Let{\\'o}n E."), as.person("Cadarso Su{\\'a}rez C.")),
-  journal = "The R Journal (accepted)",
+  author = c(as.person("L{\\'o}pez-Rat{\\'o}n M."), as.person("Molanes-L{\\'o}pez E.M."), as.person("Let{\\'o}n E."), as.person("Cadarso Su{\\'a}rez C.")),
+  journal = "The R Journal",
   year = "2017",
-  volume = "",
-  number = "",
-  pages = "",
-  url = "",
-  textVersion = paste("L髉ez-Rat髇 M., Molanes-L髉ez E.M., Let髇 E. and Cadarso Su醨ez C. (2017).", "GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests.", "The R Journal (accepted).")
+  volume = "9",
+  number = "1",
+  pages = "262-283",
+  url = "https://doi.org/10.32614/RJ-2017-015",
+  textVersion = paste("L贸pez-Rat贸n M., Molanes-L贸pez E.M., Let贸n E. and Cadarso Su谩rez C. (2017).", "GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests.", "The R Journal 9(1):262-283.")
 )

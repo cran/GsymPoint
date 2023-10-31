@@ -29,9 +29,3 @@ data(melanoma)
 summary(melanoma)
 }
 \keyword{datasets}
-
-
-
-
-
-

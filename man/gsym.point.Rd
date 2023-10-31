@@ -58,21 +58,21 @@ a  logical value that allows to show extra information on the normality assumpti
 }
 
 \details{
-The Symmetry point \eqn{c_{S}} satisfies the equality \eqn{p(c_{S}) = q(c_{S})}, where \eqn{p} and \eqn{q} denote, respectively, the specificity (or true negative fraction) and sensitivity (or true positive fraction). Geometrically, it is the point where the ROC curve and the line \eqn{y = 1 - x} (the perpendicular to the positive diagonal line) intersect, and it can also be seen as the point that maximizes simultaneously both types of correct classifications (Riddle and Stratford, 1999; Gallop et al., 2003) corresponding, therefore, to the probability of correctly classifying any subject, whether it is healthy or diseased (\enc{Jim閚ez}{Jimenez}-Valverde et al., 2012; 2014).
+The Symmetry point \eqn{c_{S}} satisfies the equality \eqn{p(c_{S}) = q(c_{S})}, where \eqn{p} and \eqn{q} denote, respectively, the specificity (or true negative fraction) and sensitivity (or true positive fraction). Geometrically, it is the point where the ROC curve and the line \eqn{y = 1 - x} (the perpendicular to the positive diagonal line) intersect, and it can also be seen as the point that maximizes simultaneously both types of correct classifications (Riddle and Stratford, 1999; Gallop et al., 2003) corresponding, therefore, to the probability of correctly classifying any subject, whether it is healthy or diseased (\enc{Jim茅nez}{Jimenez}-Valverde et al., 2012; 2014).
 
-Taking into account the costs associated to the false positives and false negatives misclassifications, \eqn{C_{FP}} and \eqn{C_{FN}}, an extension of the Symmetry point called the Generalized Symmetry point, \eqn{c_{GS}}, can be defined as follows (\enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton} et al., 2015):
+Taking into account the costs associated to the false positives and false negatives misclassifications, \eqn{C_{FP}} and \eqn{C_{FN}}, an extension of the Symmetry point called the Generalized Symmetry point, \eqn{c_{GS}}, can be defined as follows (\enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton} et al., 2015):
 \deqn{\rho (1-p(c_{GS})) = 1-q(c_{GS})}
 where \eqn{\rho = \frac{C_{FP}}{C_{FN}}} is the relative loss (cost) of a false positive classification as compared with a false negative classification.
 Analogously to the Symmetry point, \eqn{c_{GS}} is obtained graphically by the intersection point between the ROC curve and the line \eqn{y = 1 - \rho x}.
 
-In this package, the two methods proposed in \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton} et al. (2016) for estimating the Generalized Symmetry point and its sensitivity and specificity indexes are available:
+In this package, the two methods proposed in \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton} et al. (2016) for estimating the Generalized Symmetry point and its sensitivity and specificity indexes are available:
 
 \code{"GPQ"}: Method based on the Generalized Pivotal Quantity (Weerahandi, 1993; 1995; Lai et al., 2012). It assumes that the diagnostic test on both groups or a monotone Box-Cox transformation is Normal distributed. So, the Generalized Symmetry point \eqn{c_{GS}} can be estimated from the following equation:
 \deqn{\Phi(a+b\Phi^{-1}(t)) = 1-\rho t  \Leftrightarrow  \Phi \left(\frac{\Phi^{-1}(1-\rho t)-a}{b}\right)-t=0}
 where \eqn{a=\frac{\mu_1-\mu_0}{\sigma_1}}, \eqn{b=\frac{\sigma_0}{\sigma_1}}, \eqn{t=1-p(c_{GS})} and \eqn{\Phi} denotes the standard Normal cumulative distribution function (cdf), with \eqn{\mu_i} and \eqn{\sigma_i}, i = 0,1, the mean and standard deviation of healthy (\eqn{i}=0) and diseased (\eqn{i}=1) populations, respectively.
 To check the assumption of normality, the Shapiro-Wilk test is used with a significance level of 5\%.
 
-\code{"EL"}: Method based on the Empirical Likelihood (Thomas and Grunkemeier, 1975). It takes into account that \eqn{c_{GS}} can be seen as two specific quantiles, the \eqn{p(c_{GS})}-th quantile of the healthy population and the \eqn{\rho (1-q(c_{GS}))}-th quantile of the diseased population. Following the same reasoning as in Molanes-\enc{L髉ez}{Lopez} and \enc{Let髇}{Leton} (2011), and considering that the value of \eqn{p(c_{GS})} is known in advance and the Generalized Symmetry point defines an operating point on the ROC curve fulfilling \eqn{1-x=p(c_{GS})}, the following adjusted empirical log-likelihood ratio function is derived to make inference on \eqn{c_{GS}}:
+\code{"EL"}: Method based on the Empirical Likelihood (Thomas and Grunkemeier, 1975). It takes into account that \eqn{c_{GS}} can be seen as two specific quantiles, the \eqn{p(c_{GS})}-th quantile of the healthy population and the \eqn{\rho (1-q(c_{GS}))}-th quantile of the diseased population. Following the same reasoning as in Molanes-\enc{L贸pez}{Lopez} and \enc{Let贸n}{Leton} (2011), and considering that the value of \eqn{p(c_{GS})} is known in advance and the Generalized Symmetry point defines an operating point on the ROC curve fulfilling \eqn{1-x=p(c_{GS})}, the following adjusted empirical log-likelihood ratio function is derived to make inference on \eqn{c_{GS}}:
 \deqn{\ell(c)=2n_0\hat{F}_{0,g_{0}}(c)\log\!\left(\frac{\hat{F}_{0,g_{0}}(c)}{p(c)}\right) +2n_0(1-\hat{F}_{0,g_{0}}(c))\log\left(\frac{1-\hat{F}_{0,g_0}(c)}{1-p(c)}\right)}
 \deqn{+2n_1\hat{F}_{1,g_{1}}(c)\log\left(\frac{\hat{F}_{1,g_{1}}(c)}{\rho(1-p(c))}\right)
 +2n_1(1-\hat{F}_{1,g_{1}}(c))\log\left(\frac{1-\hat{F}_{1,g_{1}}(c)}{1-\rho (1-p(c))}\right)\!,
@@ -116,21 +116,21 @@ Returns an object of class "gsym.point" with the following components:
 \references{
 Gallop, R.J., Crits-Christoph, P., Muenz, L.R. and Tu, X.M. (2003). Determination and interpretation of the optimal operating point for ROC curves derived through generalized linear models. \emph{Understanding Statistics} \bold{2}, 219-242.
 
-\enc{Jim閚ez}{Jimenez}-Valverde, A. (2012). Insights into the area under the receiver operating characteristic curve (AUC) as a discrimination measure in species distribution modelling. \emph{Global Ecology and Biogeography}  \bold{21}, 498-507.
+\enc{Jim茅nez}{Jimenez}-Valverde, A. (2012). Insights into the area under the receiver operating characteristic curve (AUC) as a discrimination measure in species distribution modelling. \emph{Global Ecology and Biogeography}  \bold{21}, 498-507.
 
-\enc{Jim閚ez}{Jimenez}-Valverde, A. (2014). Threshold-dependence as a desirable attribute for discrimination assessment: implications for the evaluation of species distribution models. \emph{Biodiversity Conservation} \bold{23}, 369-385 
+\enc{Jim茅nez}{Jimenez}-Valverde, A. (2014). Threshold-dependence as a desirable attribute for discrimination assessment: implications for the evaluation of species distribution models. \emph{Biodiversity Conservation} \bold{23}, 369-385 
 
 Lai, C.Y., Tian, L. and Schisterman, E.F. (2012). Exact confidence interval estimation for the Youden index and its corresponding optimal cut-point. \emph{Comput. Stat. Data Anal.} \bold{56}, 1103-1114.
 
-\enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, M., Cadarso-\enc{Su醨ez}{Suarez}, C., Molanes-\enc{L髉ez}{Lopez}, E.M. and \enc{Let髇}{Leton}, E. (2016). Confidence intervals for the Symmetry point: an optimal cutpoint in continuous diagnostic tests. \emph{Pharmaceutical Statistics} \bold{15(2)}, 178-192.
+\enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, M., Cadarso-\enc{Su谩rez}{Suarez}, C., Molanes-\enc{L贸pez}{Lopez}, E.M. and \enc{Let贸n}{Leton}, E. (2016). Confidence intervals for the Symmetry point: an optimal cutpoint in continuous diagnostic tests. \emph{Pharmaceutical Statistics} \bold{15(2)}, 178-192.
 
-\enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, M., Molanes-\enc{L髉ez}{Lopez}, E.M., \enc{Let髇}{Leton}, E. and Cadarso-\enc{Su醨ez}{Suarez}, C. (2017). GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests. \emph{The R Journal} (accepted).
+\enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, M., Molanes-\enc{L贸pez}{Lopez}, E.M., \enc{Let贸n}{Leton}, E. and Cadarso-\enc{Su谩rez}{Suarez}, C. (2017). GsymPoint: An R Package to Estimate the Generalized Symmetry Point, an Optimal Cut-off Point for Binary Classification in Continuous Diagnostic Tests. \emph{The R Journal} \bold{9(1)}, 262-283.
 
 Metz, C.E. (1978). Basic Principles of ROC Analysis. \emph{Seminars in Nuclear Medicine} \bold{8}, 183-298.
 
-Molanes-\enc{L髉ez}{Lopez}, E.M. and \enc{Let髇}{Leton}, E. (2011). Inference of the Youden index and associated threshold using empirical likelihood for quantiles. \emph{Statistics in Medicine} \bold{30}, 2467-2480.
+Molanes-\enc{L贸pez}{Lopez}, E.M. and \enc{Let贸n}{Leton}, E. (2011). Inference of the Youden index and associated threshold using empirical likelihood for quantiles. \emph{Statistics in Medicine} \bold{30}, 2467-2480.
 
-Molanes-\enc{L髉ez}{Lopez}, E.M., Van Keilegom, I. and Veraverbeke, N. (2009). Empirical likelihood for non-smooth criterion functions. \emph{Scandinavian Journal of Statistics} \bold{36}, 413-432.
+Molanes-\enc{L贸pez}{Lopez}, E.M., Van Keilegom, I. and Veraverbeke, N. (2009). Empirical likelihood for non-smooth criterion functions. \emph{Scandinavian Journal of Statistics} \bold{36}, 413-432.
 
 Remaley, A.T., Sampson, M.L., DeLeo, J.M., Remaley, N.A., Farsi, B.D. and Zweig, M.H. (1999). Prevalence-value-accuracy plots: a new method for comparing diagnostic tests based on misclassification costs. \emph{Clinical Chemistry} \bold{45}, 934-941.
 
@@ -140,7 +140,7 @@ Rutter, C.M. and Miglioretti, D.L. (2003). Estimating the accuracy of psychologi
 
 Thomas, D.R. and Grunkemeier, G.L. (1975). Confidence interval estimation of survival probabilities for censored data. \emph{Journal of the American Statistical Association} \bold{70}, 865-871.
 
-Wand, M.P. and Jones, M.C. (1995). \emph{Kernel smoothing}. Chapman \& Hall, London.
+Wand, M.P. and Jones, M.C. (1995). \emph{Kernel smoothing}. Chapman and Hall, London.
 
 Weerahandi, S. (1993). Generalized confidence intervals. \emph{Journal of the American Statistical Association} \bold{88}, 899-905. 
 
@@ -150,7 +150,7 @@ Zhou, W. and Jing, B.Y. (2003). Adjusted empirical likelihood method for quantil
 }
 
 \author{
-	\enc{M髇ica}{Monica} \enc{L髉ez}{Lopez}-\enc{Rat髇}{Raton}, Carmen Cadarso-\enc{Su醨ez}{Suarez}, Elisa M. Molanes-\enc{L髉ez}{Lopez} and Emilio \enc{Let髇}{Leton}
+	\enc{M贸nica}{Monica} \enc{L贸pez}{Lopez}-\enc{Rat贸n}{Raton}, Carmen Cadarso-\enc{Su谩rez}{Suarez}, Elisa M. Molanes-\enc{L贸pez}{Lopez} and Emilio \enc{Let贸n}{Leton}
 }
 
 \seealso{
@@ -227,4 +227,3 @@ summary(gsym.point.GPQ.elastase)
 plot(gsym.point.GPQ.elastase)
 
 }
-
